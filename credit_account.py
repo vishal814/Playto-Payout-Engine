@@ -46,10 +46,10 @@ def credit_merchant(amount_inr, description="Manual Credit"):
             # 3. Verify integrity
             merchant.verify_integrity()
             
-            print(f"✅ Success! New Available Balance: ₹{merchant.available_balance_paise / 100:.2f}")
+            print(f" Success! New Available Balance: ₹{merchant.available_balance_paise / 100:.2f}")
 
     except Exception as e:
-        print(f"❌ Error occurred: {e}")
+        print(f" Error occurred: {e}")
 
 if __name__ == "__main__":
     # Check if amount was passed via command line arguments
