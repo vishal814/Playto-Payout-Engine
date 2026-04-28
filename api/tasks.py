@@ -1,21 +1,22 @@
 import random
 import time
 from celery import shared_task
+from celery.exceptions import MaxRetriesExceededError
 from django.db import transaction
 from .models import Payout, Merchant, LedgerEntry
 
 class BankTimeoutException(Exception):
     pass
 
-@shared_task(bind=True, autoretry_for=(BankTimeoutException,), retry_backoff=True, max_retries=3)
+@shared_task(bind=True, max_retries=3)
 def process_payout(self, payout_id):
     try:
         payout = Payout.objects.get(id=payout_id)
     except Payout.DoesNotExist:
         return
 
-    # Strict State Machine: Must be PENDING to begin processing
-    if payout.status != Payout.PENDING:
+    # Strict State Machine: Must be PENDING or PROCESSING (if it's a retry)
+    if payout.status not in [Payout.PENDING, Payout.PROCESSING]:
         return
 
     payout.status = Payout.PROCESSING
@@ -29,15 +30,19 @@ def process_payout(self, payout_id):
     )[0]
 
     if outcome == 'HANG':
-        # Simulating a timeout/hang. This will raise an exception and trigger Celery's retry logic.
-        raise BankTimeoutException("Bank network timed out.")
+        try:
+            # Trigger exponential backoff manually
+            self.retry(exc=BankTimeoutException("Bank network timed out."), countdown=2 ** self.request.retries)
+        except MaxRetriesExceededError:
+            # If we've hit max retries, treat it as a FAIL outcome
+            outcome = 'FAIL'
 
-    elif outcome == 'SUCCESS':
+    if outcome == 'SUCCESS':
         with transaction.atomic():
             merchant = Merchant.objects.select_for_update().get(id=payout.merchant_id)
             payout = Payout.objects.select_for_update().get(id=payout_id)
             
-            # State machine guard: another worker may have already handled this
+            # State machine guard
             if payout.status != Payout.PROCESSING:
                 return
             
@@ -62,7 +67,7 @@ def process_payout(self, payout_id):
             merchant = Merchant.objects.select_for_update().get(id=payout.merchant_id)
             payout = Payout.objects.select_for_update().get(id=payout_id)
             
-            # State machine guard: another worker may have already handled this
+            # State machine guard
             if payout.status != Payout.PROCESSING:
                 return
             
