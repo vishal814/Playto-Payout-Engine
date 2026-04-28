@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { RefreshCw, CheckCircle, XCircle, Clock, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 
-const API_BASE = 'http://127.0.0.1:8000/api/v1';
-const MERCHANT_ID = '0776f8a9-62a8-4ba4-9ecb-8fb584343519';
+const API_BASE = 'https://railway.com/project/109fec07-fb80-4752-b386-f281fa1dcd61/api/v1';
+const MERCHANT_ID = 'c0b203e3-ac91-406e-903b-e984763788bb';
 
 export default function App() {
   const [merchant, setMerchant] = useState<any>(null);
