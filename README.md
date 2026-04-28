@@ -1,4 +1,4 @@
-# Playto Payout Engine 🚀
+# Playto Payout Engine 
 
 A highly reliable, production-ready payout system built for the Playto Founding Engineer Challenge. 
 
@@ -69,7 +69,7 @@ Open **http://localhost:5173** in your browser.
 
 ---
 
-## 🧪 Testing & Utilities
+##  Testing & Utilities
 
 ### Automated Tests
 Run the concurrency and idempotency tests:
