@@ -1,0 +1,18 @@
+# Python / Django
+venv/
+__pycache__/
+*.pyc
+
+
+# Secrets
+.env
+
+# Node / React
+frontend/node_modules/
+frontend/dist/
+frontend/.npm/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
