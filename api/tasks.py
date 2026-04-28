@@ -61,6 +61,9 @@ def process_payout(self, payout_id):
             
             payout.status = Payout.COMPLETED
             payout.save(update_fields=['status'])
+            
+        # Trigger Webhook
+        send_webhook.delay(payout.id, payout.status)
 
     elif outcome == 'FAIL':
         with transaction.atomic():
@@ -78,3 +81,25 @@ def process_payout(self, payout_id):
             
             payout.status = Payout.FAILED
             payout.save(update_fields=['status'])
+
+        # Trigger Webhook
+        send_webhook.delay(payout.id, payout.status)
+
+class WebhookDeliveryException(Exception):
+    pass
+
+@shared_task(bind=True, autoretry_for=(WebhookDeliveryException,), retry_backoff=True, max_retries=5)
+def send_webhook(self, payout_id, status):
+    """
+    Simulates sending a webhook notification with exponential backoff retries.
+    """
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    # Simulate network failure 30% of the time to demonstrate retries
+    if random.random() < 0.30:
+        logger.warning(f"Webhook delivery failed for Payout {payout_id}. Retrying...")
+        raise WebhookDeliveryException("Webhook server unreachable")
+        
+    logger.info(f"Webhook delivered successfully for Payout {payout_id}. Status: {status}")
+    return "Delivered"
