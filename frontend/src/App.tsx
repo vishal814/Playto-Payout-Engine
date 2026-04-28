@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { RefreshCw, CheckCircle, XCircle, Clock, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 
-const API_BASE = 'playto-payout-engine-production-33d2.up.railway.app/api/v1';
+const API_BASE = 'https://playto-payout-engine-production-33d2.up.railway.app/api/v1';
 const MERCHANT_ID = 'c0b203e3-ac91-406e-903b-e984763788bb';
 
 export default function App() {
