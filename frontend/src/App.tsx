@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { RefreshCw, CheckCircle, XCircle, Clock, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 
 const API_BASE = 'https://playto-payout-engine-production-e5b3.up.railway.app/api/v1';
-const MERCHANT_ID = '09f5782f-f0d7-483d-86fb-b7414f388b08';
+const MERCHANT_ID = '1fbd1004-382f-4a98-8579-467d7392e25b';
 
 export default function App() {
   const [merchant, setMerchant] = useState<any>(null);
